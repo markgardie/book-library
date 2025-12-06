@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Видалити книгу - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-trash-alt"></i> Підтвердження видалення</h5>
+            </div>
+            <div class="card-body">
+                <p>Ви впевнені, що хочете видалити книгу <strong>{{ object.title }}</strong>?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'library:book_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Скасувати
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i> Видалити
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

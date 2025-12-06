@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% if book.cover %}
+            <img src="{{ book.cover.url }}" class="book-cover rounded" alt="{{ book.title }}">
+        {% else %}
+            <div class="book-cover bg-light rounded d-flex align-items-center justify-content-center">
+                <i class="fas fa-book fa-5x text-muted"></i>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h1>{{ book.title }}</h1>
+            {% if user.is_authenticated and book.added_by == user %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'library:book_update' book.pk %}">
+                            <i class="fas fa-edit"></i> Редагувати
+                        </a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'library:book_delete' book.pk %}">
+                            <i class="fas fa-trash"></i> Видалити
+                        </a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        
+        <p class="h5 text-muted mb-3">{{ book.author }}</p>
+        
+        <div class="mb-3">
+            {% if book.get_average_rating > 0 %}
+                <div class="rating mb-2">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= book.get_average_rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="ms-2">{{ book.get_average_rating }}/5 ({{ book.get_reviews_count }} рецензій)</span>
+                </div>
+            {% else %}
+                <div class="text-muted mb-2">Немає оцінок</div>
+            {% endif %}
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-sm-6">
+                <p><strong>Жанр:</strong> {{ book.genre }}</p>
+                <p><strong>Сторінок:</strong> {{ book.pages }}</p>
+            </div>
+            <div class="col-sm-6">
+                <p><strong>Дата публікації:</strong> {{ book.publication_date }}</p>
+                <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h5>Опис</h5>
+            <p>{{ book.description|linebreaks }}</p>
+        </div>
+        
+        {% if user.is_authenticated %}
+            {% if not user_review %}
+                <a href="{% url 'library:review_create' book.pk %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Залишити рецензію
+                </a>
+            {% else %}
+                <a href="{% url 'library:review_update' user_review.pk %}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Редагувати мою рецензію
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<hr class="my-5">
+
+<!-- Рецензії -->
+<div class="row">
+    <div class="col-12">
+        <h3>Рецензії ({{ reviews.count }})</h3>
+        
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title">
+                                    {{ review.user.username }}
+                                    {% if review.user.profile.avatar %}
+                                        <img src="{{ review.user.profile.avatar.url }}" class="rounded-circle ms-2" width="30" height="30">
+                                    {% endif %}
+                                </h6>
+                                <div class="rating mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-2">{{ review.rating }}/5</span>
+                                    {% if review.is_read %}
+                                        <span class="badge bg-success ms-2">Прочитано</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        
+                        <p class="card-text">{{ review.comment|linebreaks }}</p>
+                        
+                        {% if user.is_authenticated and review.user == user %}
+                            <div class="mt-2">
+                                <a href="{% url 'library:review_update' review.pk %}" class="btn btn-sm btn-outline-primary">
+                                    Редагувати
+                                </a>
+                                <a href="{% url 'library:review_delete' review.pk %}" class="btn btn-sm btn-outline-danger">
+                                    Видалити
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Поки що немає рецензій на цю книгу.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Рецензія на {{ review.book.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Рецензія на книгу <a href="{% url 'library:book_detail' review.book.pk %}">{{ review.book.title }}</a></h5>
+    </div>
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">Автор: {{ review.user.username }}</h6>
+        <div class="rating mb-3">
+            {% for i in "12345" %}
+                {% if forloop.counter <= review.rating %}
+                    <i class="fas fa-star"></i>
+                {% else %}
+                    <i class="far fa-star"></i>
+                {% endif %}
+            {% endfor %}
+            <span class="ms-2">{{ review.rating }}/5</span>
+            {% if review.is_read %}
+                <span class="badge bg-success ms-2">Прочитано</span>
+            {% endif %}
+        </div>
+        <p>{{ review.comment|linebreaks }}</p>
+        <p class="text-muted mt-3"><small>Створено: {{ review.created_at|date:"d.m.Y H:i" }}</small></p>
+    </div>
+</div>
+{% endblock %}

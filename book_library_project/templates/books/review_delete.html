@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Видалити рецензію - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Підтвердження видалення</h5>
+    </div>
+    <div class="card-body">
+        <p>Ви впевнені, що хочете видалити рецензію на книгу <strong>{{ review.book.title }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'library:book_detail' review.book.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Скасувати
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Видалити
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

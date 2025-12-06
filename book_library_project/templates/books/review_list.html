@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Усі рецензії - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Усі рецензії</h2>
+
+{% if reviews %}
+    {% for review in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            {{ review.user.username }} на книгу <a href="{% url 'library:book_detail' review.book.pk %}">{{ review.book.title }}</a>
+                        </h5>
+                        <div class="rating mb-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ms-2">{{ review.rating }}/5</span>
+                            {% if review.is_read %}
+                                <span class="badge bg-success ms-2">Прочитано</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                <p class="card-text">{{ review.comment|truncatewords:30 }}</p>
+                <a href="{% url 'library:review_detail' review.pk %}" class="btn btn-sm btn-outline-secondary">Детальніше</a>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">Рецензій поки що немає.</p>
+{% endif %}
+{% endblock %}
